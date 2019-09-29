@@ -106,6 +106,7 @@ class Upload extends Controller
 	{
 		if (isset($_POST["length"])) {
 			$length = $_POST['length'];
+			
 			if ($length > 0) {
 				$num_row = ["true" => 0, "false" => 0];
 				$detail = array();
@@ -141,6 +142,7 @@ class Upload extends Controller
 
 									//echo $NO[$j].$NO[$j + 1].$NO[$j + 2]."<br/>";
 									$array_data = explode("@", $NO[$j + 2]);
+									
 									$table = $array_data[0];
 									$value = $array_data[1];
 									if ($this->model->check_table_exit($table)) {
@@ -222,9 +224,11 @@ class Upload extends Controller
 							$id_accession = $this->model->check_data_exit("accession_number", $NO[1]);
 							$tomato = Char_data_Model::get_by_id_accession($id_accession);
 							$id_list_group = array();
+							
 
 
 							if ($tomato) {
+							
 								$count = 0;
 								//print_r($category_list);
 								foreach ($category_list as $key => $value) {
@@ -252,6 +256,7 @@ class Upload extends Controller
 								//print_r($id_list_group);
 								//print_r($field_value_list);
 								$check_num_row = $this->model->update_fact($fact_update, $id_accession, $NO[1]);
+								print_r("update ");
 								if ($check_num_row["status"]) {
 									$num_row["true"]++;
 								} else {
@@ -291,8 +296,10 @@ class Upload extends Controller
 								$id_list_group["id_$key"] = $id_group;
 							}
 							$fact = $access + $id_list_group + $insert_field_value_list;
+							// echo "<script>alert($fact)</script>";
 							//print_r($fact);
 							$check = $this->model->insert_fact($fact, $accession);
+							print_r("new data");
 							if ($check["status"]) {
 								// echo " id_member => ".$member['id_member']." id_fact_tomato => ".$check["id_fact_tomato"]." accession => ".$accession;
 								$member =Session::get("member");
@@ -306,12 +313,16 @@ class Upload extends Controller
 					} else {
 						continue;
 					}
-
+				
 					//echo "<br/>";
 				}
-				$this->view->num_row = $num_row;
-				$this->view->detail = $detail;
-				$this->view->render('upload/result_upload');
+				// echo "<script>alert($fact)</script>";
+				
+			
+				
+				// $this->view->num_row = $num_row;
+				// $this->view->detail = $detail;
+				// $this->view->render('upload/result_upload');
 				//print_r($num_row);
 				//print_r($detail);
 			}

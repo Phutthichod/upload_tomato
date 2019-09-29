@@ -224,7 +224,7 @@
      }
  </script>
   <script>
-      $(document).on('change',".btn-upload-location",function() {
+       $(document).on('change',"#file_upload_location",function() {
          $(".font-20.padding-left-10.upload_location").empty();
          var file = $("#file_upload_location").prop("files")[0];
          $(".font-20.padding-left-10.upload_location").append(file.name);
@@ -286,10 +286,10 @@
      }
  </script>
  <script>
-     $(document).on('click',"#drop a",function() {
+      $(document).on('click','#drop a',function() {
          $(this).parent().find('input').click();
      });
-     $(document).on('click',"#file_upload",function() {
+     $(document).on('change',"#file_upload",function() {
          $(".font-20.padding-left-10").empty();
          var file = $("#file_upload").prop("files")[0];
          $(".font-20.padding-left-10").append(file.name);
@@ -364,7 +364,6 @@
                              <input id="file_upload" type="file" name="upl" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
                          </div>
                          <p>**example file to upload<a class="green" href="http://localhost/user_plant/public/example.xlsx" target="_blank" download="char_data"><span class="padding-left-10"><i class="font-20 fas fa-file-upload"></i>download </span></a></p>
-
                          <button type="button" class="btn btn-success btn-block btn-upload">Upload</button>
                      </form>
                  </div>

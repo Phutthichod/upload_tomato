@@ -144,9 +144,16 @@
     function prepare_data(data) {
 
         if (data)
+        {
+            // console.log("data");
             return data;
-        else
+        }
+        else{
+//    console.log("notdata");
             return "";
+
+        }
+     
 
     }
 
@@ -233,8 +240,11 @@
             return [false, "Invalid excel template.Please download example file and upload again"];
         }
     }
+    let wrong_i ;
+    let wrong_j ;
     var table_value = <?php echo json_encode($table_value); ?>;
     var ex_list = <?php echo json_encode($data_arr); ?>;
+    let a = ex_list;
     console.log(table_value);
     var id = [];
     var acc = [];
@@ -244,10 +254,11 @@
     var format = ["Accession number", "Hypocotyl colour", "Hypocotyl colour intensity", "Hypocotyl pubescence", "Primary leaf length (mm)", "Primary leaf width (mm)", "Plant growth type", "Plant size", "Vine length (cm)", "Stem pubescence density", "Stem internode length", "Foliage density", "Number of leaves under 1st inflorescence", "Leaf attitude", "Leaf type", "Degree of leaf dissection", "Anthocyanin colouration of leaf veins", "Inflorescence type", "Corolla colour", "Corolla blossom type", "Flower sterility type", "Petal length (cm)", "Sepal length (cm)", "Style position", "Style shape", "Style hairiness", "Stamen length (cm)", "Dehiscence", "Exterior colour of immature fruit", "Presence of green (shoulder) trips on the fruit", "Intensity of greenback", "Fruit pubescence", "Predominant fruit shape", "Fruit size", "Fruit size homogeneity", "Fruit weight (g)", "Fruit length (mm)", "Fruit width (mm)", "Exterior colour of mature fruit", "Intensity of exterior colour", "Ribbing at calyx end", "Easiness of fruit to detach from pedicel", "Fruit shoulder shape", "Pedicel length (mm)", "Pedicel length from abscission layer", "Presence/absence of jiontless pedicel", "Width of pedicel scar (mm)", "Size of corky area around pedicel scar (cm)", "Easiness of fruit wall (skin) to be peeled", "Skin colour of ripe fruit", "Thickness of fruit wall (skin) (mm)", "Thickness of pericarp (mm)", " Flesh colour of peiricarp (interior)", " Flesh colour intensity", "Colour (intensity) of core", "Fruit cross-sectional shape", "Size of score (mm)", "Number of locules", "Shape of pistil scar", "Fruit blossom end shape", "Blossom end scar condition", "Fruit firmness (after storage)", "Seed shape", "Seed colour", "1,000 seed weight (g)"];
     var int_value = ["primary_leaf_length_mm", "primary_leaf_width_mm", "vine_length_cm", "petal_length_cm", "sepal_length_cm", "stamen_length_cm", "fruit_weight_g", "fruit_length_mm", "fruit_width_mm", "pedicel_length_mm", "pedicel_length_from_abscission_layer", "width_of_pedicel_scar_mm", "size_of_corky_area_around_pedicel_scar_cm", "thickness_of_fruit_wall_skin_mm", "thickness_of_pericarp_mm", "size_of_score_mm", "number_of_locules", "1000_seed_weight_g"];
     $("#data").on("click", "td.table-danger,td.bg-danger", function() {
-        
+        // console.log("edit data");
         var str = $(this).find('input[type="checkbox"]').val();
         var res = str.split("@");
-    
+        wrong_i = $(this).attr('data_i');
+        wrong_j = $(this).attr('data_j');
         var id = $(this)[0].id;
         $("#title_edit").empty();
         $(".select-form").empty();
@@ -272,6 +283,8 @@
        
         var str = $(this).attr("data-dataval");
         var val_data = $("#" + str).val();
+        wrong_i = $(this).attr('data_i');
+        wrong_j = $(this).attr('data_j');
         var res = val_data.split("@");
         $("#title_edit-add").empty();
         $(".select-form-add").empty();
@@ -295,6 +308,11 @@
     });
     $("#edit-modal").on("click", ".btn-success", function() {
         var value = $(".select-modal").val();
+        console.log( "befor"+a[wrong_j][wrong_i]);
+        a[wrong_j][wrong_i] = prepare_data(value);
+        console.log("i = ",wrong_i+" j = "+wrong_j)
+        console.log(a);
+        console.log( a[wrong_j][wrong_i]);
         var colum = $(".select-modal").attr("data-col");
         var target = $("#title_edit").attr("data-target-value");
         var value2 = value;
@@ -320,6 +338,7 @@
     });
     $("#edit-modal-add").on("click", ".btn-success-add", function() {
         var value = $(".select-modal-add").val();
+        a[wrong_j][wrong_i] = prepare_data(value);
         var colum = $(".select-modal-add").attr("data-col");
         var target = $("#title_edit-add").attr("data-target-value");
         var target2 = $("#title_edit-add").attr("data-target-html");
@@ -344,13 +363,17 @@
     });
     var input_check = check_format(ex_list, format, 0);
     if (input_check[0]) {
+        // console.log("input_check 0"+ex_list[0].length);
         for (var i = 0; i < ex_list[0].length; i++) {
             var num_id = 1;
             if (i == 0) {
                 $("thead").append("<tr id='col_" + i + "'>");
                 for (var j = 0; j < ex_list.length; j++) {
                     ex_list[j][i] = prepare_data(ex_list[j][i]);
+                    // console.log(ex_list[j][i]+"ssss"+i);
+                  //  console.log("prepare_data(ex_list[j][i])" + prepare_data(ex_list[j][i]));
                     acc.push(searchdata(ex_list[j][i]));
+                    // console.log(ex_list[j][i]+"ssss"+i);
                     if (i == 0 && j == 0)
                         $("#col_" + i).append("<th>" + ex_list[j][i] + "</th>");
                     else if (search_id(ex_list[j][i]) && i == 0) {
@@ -363,7 +386,9 @@
             } else {
 
                 $("tbody").append("<tr id='col_" + i + "'>");
+               
                 for (var j = 0; j < ex_list.length; j++) {
+                  
                     ex_list[j][i] = prepare_data(ex_list[j][i]);
                    
                     if (j == 0) {
@@ -371,8 +396,10 @@
                     } else if (ex_list[j][0] == id[num_id - 1]) {
                         num_id++;
                         if (ex_list[j][i] != acc[j][head[i]]) {
+                            // console.log("dataisnot 1: "+ex_list[j][i]+"two "+acc[j][head[i]]);
 
                             var data1 = acc[j][head[i]];
+                            console.log("acc = "+data1);
                             var data2 = ex_list[j][i];
                             if ($.isNumeric(acc[j][head[i]]))
                                 data1 = toFixed(acc[j][head[i]], 2);
@@ -387,39 +414,45 @@
 
                                     if (oob.indexOf(data2) == -1) {
                                         check_value_table = false;
+                                       
+                                        // console.log("falsee = "+i+j);
 
                                     }
 
 
                                 }
                                 if (!check_value_table) {
-
-                                    $("#col_" + i).append(`<td class='bg-danger' id='` + ex_list[j][0] + `-` + head[i] + `'>                       
+                                    console.log("check No "+i+j);
+                            
+                                    $("#col_" + i).append(`<td class='bg-danger' data_i = ${i} data_j =${j}  id='` + ex_list[j][0] + `-` + head[i] + `'>                       
                            <input type='hidden' name="NO` + j + `[]" value="update">
                            <input type='hidden' name="NO` + j + `[]" value="` + ex_list[j][0] + `">                           
                            <input type='checkbox' name="NO` + j + `[]" value="` + head[i] + `@` + data2 + `" checked><lable style="font-weight:normal" class='new'>` + data2 + `</lable>
                            <div>` + data1 + `,<span class='new'>` + data2 + `</span>
                            </div></td>`);
                                 } else {
+                                    // console.log("check "+i);
                                     if ($.isNumeric(data2) && data2.toString().trim().length != 0 && int_value.indexOf(head[i]) != -1) {
+                                        console.log("case 1");
 
-                                        $("#col_" + i).append(`<td class='table-danger ' id='` + ex_list[j][0] + `-` + head[i] + `'>                       
+                                        $("#col_" + i).append(`<td class='table-danger '  data_i = ${i} data_j =${j}  id='` + ex_list[j][0] + `-` + head[i] + `'>                       
                            <input type='hidden' name="NO` + j + `[]" value="update">
                            <input type='hidden' name="NO` + j + `[]" value="` + ex_list[j][0] + `">                           
                            <input type='checkbox' name="NO` + j + `[]" value="` + head[i] + `@` + data2 + `" checked><lable style="font-weight:normal" class='new'>` + data2 + `</lable>
                            <div>` + data1 + `,<span class='new'>` + data2 + `</span>
                            </div></td>`);
                                     } else if (int_value.indexOf(head[i]) == -1) {
-
+                                        console.log("case2");
                                        
-                                        $("#col_" + i).append(`<td class='table-danger ' id='` + ex_list[j][0] + `-` + head[i] + `'>                       
+                                        $("#col_" + i).append(`<td class='table-danger '  data_i = ${i} data_j =${j}  id='` + ex_list[j][0] + `-` + head[i] + `'>                       
                            <input type='hidden' name="NO` + j + `[]" value="update">
                            <input type='hidden' name="NO` + j + `[]" value="` + ex_list[j][0] + `">                           
                            <input type='checkbox' name="NO` + j + `[]" value="` + head[i] + `@` + data2 + `" checked><lable style="font-weight:normal" class='new'>` + data2 + `</lable>
                            <div>` + data1 + `,<span class='new'>` + data2 + `</span>
                            </div></td>`);
                                     } else {
-                                        $("#col_" + i).append(`<td class='bg-danger ' id='` + ex_list[j][0] + `-` + head[i] + `'>                       
+                                        console.log("case 3"+i+j);
+                                        $("#col_" + i).append(`<td class='bg-danger '  data_i = ${i} data_j =${j}  id='` + ex_list[j][0] + `-` + head[i] + `'>                       
                            <input type='hidden' name="NO` + j + `[]" value="update">
                            <input type='hidden' name="NO` + j + `[]" value="` + ex_list[j][0] + `">                           
                            <input type='checkbox' name="NO` + j + `[]" value="` + head[i] + `@` + data2 + `" checked><lable style="font-weight:normal" class='new'>` + data2 + `</lable>
@@ -432,13 +465,15 @@
 
 
                                 if (chkLength == 0) {
+                                    
+                                    console.log("case lenght = 0"+i+j);
                                     chkLength++;
                                     $("#col_" + i).append(`<input type='hidden' name='length' value='` + (ex_list.length) + `'>`);
                                 }
                             } else if (data1 == null && data2 == '') {
                                 $("#col_" + i).append(`<td></td>`);
                             } else if (data1 == null && data2 != '') {
-                                $("#col_" + i).append(`<td class='table-danger' id='` + ex_list[j][0] + `-` + head[i] + `'>                       
+                                $("#col_" + i).append(`<td class='table-danger' data_i = ${i} data_j =${j}  id='` + ex_list[j][0] + `-` + head[i] + `'>                       
                            <input type='hidden' name="NO` + j + `[]" value="update">
                            <input type='hidden' name="NO` + j + `[]" value="` + ex_list[j][0] + `">                           
                            <input type='checkbox' name="NO` + j + `[]" value="` + head[i] + `@` + data2 + `" checked><lable style="font-weight:normal" class='new'>` + data2 + `</lable>
@@ -480,7 +515,7 @@
 
                         if (!check_value_table) {
                             $("#col_" + i).append(`<input type='hidden' id="` + ex_list[j][0] + `-` + head[i] + `" name="NO` + j + `[]" value="` + head[i] + `@` + ex_list[j][i] + `">`);
-                            $("#col_" + i).append(`<td class='bg-danger-add' id="add-` + ex_list[j][0] + `-` + head[i] + `" data-dataval="` + ex_list[j][0] + `-` + head[i] + `">` + ex_list[j][i] + `</td>`);
+                            $("#col_" + i).append(`<td class='bg-danger-add'  data_i = ${i} data_j =${j}  id="add-` + ex_list[j][0] + `-` + head[i] + `" data-dataval="` + ex_list[j][0] + `-` + head[i] + `">` + ex_list[j][i] + `</td>`);
 
                         } else {
 
@@ -493,7 +528,7 @@
                                 $("#col_" + i).append(`<td class='table-primary'>` + ex_list[j][i] + `</td>`);
                             } else {
                                 $("#col_" + i).append(`<input type='hidden' id="` + ex_list[j][0] + `-` + head[i] + `" name="NO` + j + `[]" value="` + head[i] + `@` + ex_list[j][i] + `">`);
-                                $("#col_" + i).append(`<td class='bg-danger-add' id="add-` + ex_list[j][0] + `-` + head[i] + `" data-dataval="` + ex_list[j][0] + `-` + head[i] + `">` + ex_list[j][i] + `</td>`);
+                                $("#col_" + i).append(`<td class='bg-danger-add'  data_i = ${i} data_j =${j}  id="add-` + ex_list[j][0] + `-` + head[i] + `" data-dataval="` + ex_list[j][0] + `-` + head[i] + `">` + ex_list[j][i] + `</td>`);
                             }
                         }
 
@@ -542,14 +577,15 @@
         var array_config = $(".bg-danger,.bg-danger-add");
         if (array_config.length > 0) {
             for (var x = 0; x < array_config.length; x++) {
-                var id = array_config[x].id;
-                $("#" + id).attr("title", "Please change value !");
-                $("#" + id).find("input[type='checkbox']").focus();
-                $("#" + id).tooltip('show');
+                var idd = array_config[x].id;
+                $("#" + idd).attr("title", "Please change value !");
+                $("#" + idd).find("input[type='checkbox']").focus();
+                $("#" + idd).tooltip('show');
                 break;
             }
         } else {
-            $("#form_upload").submit();
+            console.log(a);
+            // $("#form_upload").submit();
         }
 
     });

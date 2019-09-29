@@ -74,8 +74,10 @@
         background-color: #ff6258;
     }
 </style>
+
 <?php include("libs/PHPExcel-1.8/Classes/PHPExcel.php") ?>
 <?php include("views/upload/helper_location.php") ?>
+
 <!-- หน้าเว็บ -->
 <?php
 function utf8ize($d)
@@ -156,6 +158,7 @@ $table_value = json_encode(utf8ize($this->table_value)); ?>
     </div>
 </div>
 <script>
+ 
     $(document).ready(function() {
         $('#data').DataTable({
             fixedColumns: {
@@ -183,12 +186,25 @@ $table_value = json_encode(utf8ize($this->table_value)); ?>
     });
 </script>
 <script>
+var ex_list = <?php echo json_encode($data_arr); ?>;
+    var table_value = <?php echo $table_value; ?>;
+    let wrong_i = "";
+    let wrong_j = "";
+    let a = ex_list;
+    console.log(table_value);
+    var acc = [];
+    var id = [];
+    var check_add = 0;
+    var chkLength = 0;
+    var check_not_found = [];
     var base_url = "<?php echo URL; ?>";
     $("#data").on("click", "td.table-danger,td.bg-danger", function() {
-
+      
         var str = $(this).find('input[type="checkbox"]').val();
         var res = str.split("@");
-
+       console.log("click");
+        wrong_i = $(this).attr('data_i');
+        wrong_j = $(this).attr('data_j');
         var id = $(this)[0].id;
         $("#title_edit").empty();
         $(".select-form").empty();
@@ -213,7 +229,8 @@ $table_value = json_encode(utf8ize($this->table_value)); ?>
         $("#edit-modal").modal();
     });
     $("#data").on("click", "td.bg-danger-add,td.table-danger-add", function() {
-
+        wrong_i = $(this).attr('data_i');
+        wrong_j = $(this).attr('data_j');
         var str = $(this).attr("data-dataval");
         var val_data = $("#" + str).val();
         var res = val_data.split("@");
@@ -242,6 +259,12 @@ $table_value = json_encode(utf8ize($this->table_value)); ?>
     });
     $("#edit-modal").on("click", ".btn-success", function() {
         var value = $(".select-modal").val();
+       
+        console.log( "befor"+a[wrong_j][wrong_i]);
+        a[wrong_j][wrong_i] = value;
+        console.log("i = ",wrong_i+" j = "+wrong_j)
+        console.log(a);
+        console.log( a[wrong_j][wrong_i]);
         var colum = $(".select-modal").attr("data-col");
         var target = $("#title_edit").attr("data-target-value");
         var value2 = value;
@@ -271,6 +294,7 @@ $table_value = json_encode(utf8ize($this->table_value)); ?>
     });
     $("#edit-modal-add").on("click", ".btn-success-add", function() {
         var value = $(".select-modal-add").val();
+        a[wrong_j][wrong_i] = value;
         var colum = $(".select-modal-add").attr("data-col");
         var target = $("#title_edit-add").attr("data-target-value");
         var target2 = $("#title_edit-add").attr("data-target-html");
@@ -422,14 +446,7 @@ $table_value = json_encode(utf8ize($this->table_value)); ?>
             return [false, "Invalid excel template.Please download example file and upload again"];
         }
     }
-    var ex_list = <?php echo json_encode($data_arr); ?>;
-    var table_value = <?php echo $table_value; ?>;
-    console.log(table_value);
-    var acc = [];
-    var id = [];
-    var check_add = 0;
-    var chkLength = 0;
-    var check_not_found = [];
+   
     var format = ["Accession number", "TM Group", "Temporary number", "Other number", "Collector number", "Collector", "Crop collection", "Variety", "Seed amount_g", "Genus", "Species", "Collection date", "Grower name", "Donor name", "Address", "Sub district", "District", "Province", "Country", "Institute", "Usage", "Latitude", "Longitude", "Collection source", "Genetict status", "Sample type", "Material", "Photograpy", "Topography", "Soil texure", "Remark"];
     var int_value = ["seed_amount_g", "address", "latitude", "longitude"];
     var input_check = check_format(ex_list, format, 0);
@@ -502,7 +519,8 @@ $table_value = json_encode(utf8ize($this->table_value)); ?>
                                 $("#col_" + i).append(`<input type='hidden' name='length' value='` + (ex_list.length) + `'>`);
                             }
                             if (!check_value_table) {
-                                $("#col_" + i).append(`<td class='bg-danger ' id='` + head + `-` + ex_list[j][0] + `'>                       
+                                console.log("case !check_value_table i = "+i+" j = "+j);
+                                $("#col_" + i).append(`<td data_i = '2' class='bg-danger'  data_i = ${i} data_j =${j}   id='` + head + `-` + ex_list[j][0] + `'>                       
                             <input type='hidden' name="NO` + j + `[]" value="update">
                             <input type='hidden' name="NO` + j + `[]" value="` + ex_list[j][0] + `">                           
                             <input type='checkbox' name="NO` + j + `[]" value="` + head + `@` + data2 + `" checked><lable style="font-weight:normal" class='new'>` + data2 + `</lable>
@@ -511,21 +529,24 @@ $table_value = json_encode(utf8ize($this->table_value)); ?>
 
                             } else {
                                 if ($.isNumeric(data2) && data2.toString().trim().length != 0 && int_value.indexOf(head) != -1) {
-                                    $("#col_" + i).append(`<td class='table-danger ' id='` + head + `-` + ex_list[j][0] + `'>                       
+                                    console.log("case numberric i = "+i+" j = "+j);
+                                    $("#col_" + i).append(`<td class='table-danger 'data_i = ${i} data_j =${j} id='` + head + `-` + ex_list[j][0] + `'>                       
                             <input type='hidden' name="NO` + j + `[]" value="update">
                             <input type='hidden' name="NO` + j + `[]" value="` + ex_list[j][0] + `">                           
                             <input type='checkbox' name="NO` + j + `[]" value="` + head + `@` + data2 + `" checked><lable style="font-weight:normal" class='new'>` + data2 + `</lable>
                             <div>` + data1 + `,<span class='new'>` + data2 + `</span>
                             </div></td>`);
                                 } else if (int_value.indexOf(head) == -1) {
-                                    $("#col_" + i).append(`<td class='table-danger ' id='` + head + `-` + ex_list[j][0] + `'>                       
+                                    console.log("case indexOf i = "+i+" j = "+j);
+                                    $("#col_" + i).append(`<td class='table-danger ' data_i = ${i} data_j =${j} id='` + head + `-` + ex_list[j][0] + `'>                       
                             <input type='hidden' name="NO` + j + `[]" value="update">
                             <input type='hidden' name="NO` + j + `[]" value="` + ex_list[j][0] + `">                           
                             <input type='checkbox' name="NO` + j + `[]" value="` + head + `@` + data2 + `" checked><lable style="font-weight:normal" class='new'>` + data2 + `</lable>
                             <div>` + data1 + `,<span class='new'>` + data2 + `</span>
                             </div></td>`);
                                 } else {
-                                    $("#col_" + i).append(`<td class='bg-danger ' id='` + head + `-` + ex_list[j][0] + `'>                       
+                                    console.log("case else i = "+i+" j = "+j);
+                                    $("#col_" + i).append(`<td class='bg-danger ' data_i = ${i} data_j =${j} id='` + head + `-` + ex_list[j][0] + `'>                       
                             <input type='hidden' name="NO` + j + `[]" value="update">
                             <input type='hidden' name="NO` + j + `[]" value="` + ex_list[j][0] + `">                           
                             <input type='checkbox' name="NO` + j + `[]" value="` + head + `@` + data2 + `" checked><lable style="font-weight:normal" class='new'>` + data2 + `</lable>
@@ -593,21 +614,21 @@ $table_value = json_encode(utf8ize($this->table_value)); ?>
                         if (!check_value_table) {
                             if (head != "collection_date") {
                                 $("#col_" + i).append(`<input type='hidden' id="` + ex_list[j][0] + `-` + head + `" name="NO` + j + `[]" value="` + head + `@` + ex_list[j][i] + `">`);
-                                $("#col_" + i).append(`<td class='bg-danger-add'>` + ex_list[j][i] + `</td>`);
+                                $("#col_" + i).append(`<td class='bg-danger-add data_i = ${i} data_j'>` + ex_list[j][i] + `</td>`);
                             } else {
                                 var day = new Date((ex_list[j][i] - (25567 + 1)) * 86400 * 1000).toLocaleString({
                                     timeZone: "Asia/Bangkok"
                                 });
                                 var date1 = formatDate(day);
                                 $("#col_" + i).append(`<input type='hidden' id="` + ex_list[j][0] + `-` + head + `" name="NO` + j + `[]" value="` + head + `@` + To_DMY(date1) + `">`);
-                                $("#col_" + i).append(`<td class='bg-danger-add' id="add-` + ex_list[j][0] + `-` + head + `" data-dataval="` + ex_list[j][0] + `-` + head + `">` + To_DMY(date1) + `</td>`);
+                                $("#col_" + i).append(`<td class='bg-danger-add' data_i = ${i} data_j id="add-` + ex_list[j][0] + `-` + head + `" data-dataval="` + ex_list[j][0] + `-` + head + `">` + To_DMY(date1) + `</td>`);
                             }
                         } else {
                             if ($.isNumeric(ex_list[j][i]) && ex_list[j][i].toString().trim().length != 0 && int_value.indexOf(head) != -1) {
 
                                 if (head != "collection_date") {
                                     $("#col_" + i).append(`<input type='hidden' id="` + ex_list[j][0] + `-` + head + `" name="NO` + j + `[]" value="` + head + `@` + ex_list[j][i] + `">`);
-                                    $("#col_" + i).append(`<td class='table-primary'>` + ex_list[j][i] + `</td>`);
+                                    $("#col_" + i).append(`<td class='table-primary' >` + ex_list[j][i] + `</td>`);
                                 } else {
                                     var day = new Date((ex_list[j][i] - (25567 + 1)) * 86400 * 1000).toLocaleString({
                                         timeZone: "Asia/Bangkok"
@@ -631,14 +652,14 @@ $table_value = json_encode(utf8ize($this->table_value)); ?>
                             } else {
                                 if (head != "collection_date") {
                                     $("#col_" + i).append(`<input type='hidden' id="` + ex_list[j][0] + `-` + head + `" name="NO` + j + `[]" value="` + head + `@` + ex_list[j][i] + `">`);
-                                    $("#col_" + i).append(`<td class='bg-danger-add' id="add-` + ex_list[j][0] + `-` + head + `" data-dataval="` + ex_list[j][0] + `-` + head + `">` + ex_list[j][i] + `</td>`);
+                                    $("#col_" + i).append(`<td class='bg-danger-add' data_i = ${i} data_j id="add-` + ex_list[j][0] + `-` + head + `" data-dataval="` + ex_list[j][0] + `-` + head + `">` + ex_list[j][i] + `</td>`);
                                 } else {
                                     var day = new Date((ex_list[j][i] - (25567 + 1)) * 86400 * 1000).toLocaleString({
                                         timeZone: "Asia/Bangkok"
                                     });
                                     var date1 = formatDate(day);
                                     $("#col_" + i).append(`<input type='hidden' id="` + ex_list[j][0] + `-` + head + `" name="NO` + j + `[]" value="` + head + `@` + To_DMY(date1) + `">`);
-                                    $("#col_" + i).append(`<td class='bg-danger-add' id="add-` + ex_list[j][0] + `-` + head + `" data-dataval="` + ex_list[j][0] + `-` + head + `">` + To_DMY(date1) + `</td>`);
+                                    $("#col_" + i).append(`<td class='bg-danger-add' data_i = ${i} data_j id="add-` + ex_list[j][0] + `-` + head + `" data-dataval="` + ex_list[j][0] + `-` + head + `">` + To_DMY(date1) + `</td>`);
                                 }
                             }
                         }
@@ -697,7 +718,8 @@ $table_value = json_encode(utf8ize($this->table_value)); ?>
                 break;
             }
         } else {
-            $("#form_upload").submit();
+            console.log(a);
+            // $("#form_upload").submit();
         }
     });
 </script>
