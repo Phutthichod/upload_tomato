@@ -564,6 +564,8 @@
         for (var j = 0; j < ex_list.length; j++) {
             var x = $(".NO_All" + j + "_check").prop("checked");
             if (x == false) {
+                delete a[j];
+                console.log(j);  
                 $("input[name*=NO" + j + "]").remove();
                 num++;
                 num2++;
@@ -584,7 +586,22 @@
                 break;
             }
         } else {
-            console.log(a);
+            // console.log(a);
+            $.ajax({
+            url: base_url + "/upload/create_excel",
+            method: "POST",
+            async: false,
+            data: {
+                data: a
+            },
+            success: function(data) {
+                console.log('success');
+            },
+            error: function(data) {
+                //console.log("error");
+                //console.log(data);                        
+            }
+        });
             // $("#form_upload").submit();
         }
 

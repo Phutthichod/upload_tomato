@@ -3,6 +3,10 @@ require 'models/char_data_model.php';
 require 'models/location_model.php';
 require 'models/genome_data_model.php';
 require 'models/data_share_model.php';
+
+require 'vendor/autoload.php';
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class Upload extends Controller
 {
 
@@ -87,6 +91,40 @@ class Upload extends Controller
 		
 
 	}
+	public function create_excel(){
+		$data =  $_POST['data'];
+		$col_name = array( 
+			"A",  "B",  "C",  "D",  "E",  "F",  "G",  "H",  "I"  ,
+			"J",  "K"  ,"L"  ,"M"  ,"N"  ,"O"  ,"P"  ,"Q"  ,
+			"R"  ,"S"  ,"T"  ,"U"  ,"V"  ,"W"  ,"X"  ,"Y"  ,
+			"Z"  ,"AA"  ,"AB"  ,"AC"  ,"AD"  ,"AE"  ,"AF"  ,"AG"  ,
+			"AH"  ,"AI"  ,"AJ"  ,"AK"  ,"AL"  ,"AM"  ,"AN"  ,"AO"  ,
+			"AP"  ,"AQ"  ,"AR"  ,"AS"  ,"AT"  ,"AU"  ,"AV"  ,"AW"  ,
+			"AX"  ,"AY"  ,"AZ"  ,"BA"  ,"BB"  ,"BC"  ,"BD"  ,"BE"  ,
+			"BF"  ,"BG"  ,"BH"  ,"BI"  ,"BJ"  ,"BK"  ,"BL"  ,"BM"  
+			 ,"BY"  ,"BZ"  ,"CA"  ,"CB"  ,"CC"  ,
+
+		);
+		$spreadsheet = new Spreadsheet();
+		
+		$sheet = $spreadsheet->getActiveSheet();
+		// $sheet->setCellValue('A'.$i, 'Hello World !');
+		for($i = 0 ;  $i < sizeof($data); $i++ ){
+			for($j = 0 ; $j < sizeof($data[0]); $j++){
+				if(sizeof($data[$i])<64) continue;
+			if($i==0)
+			$sheet->setCellValue($col_name[$j].'1', $data[0][$j]);
+			else
+			$sheet->setCellValue($col_name[$j].($i+1), $data[$i][$j]);
+			}
+		}
+		$writer = new Xlsx($spreadsheet);
+		$filename = 'hello world';
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+		header('Cache-Control: max-age=0');
+		$writer->save($filename.".xlsx");
+	}
 	public function check_data()
 	{
 		$file = $_FILES['upl'];
@@ -113,8 +151,8 @@ class Upload extends Controller
 				for ($i = 1; $i < $length; $i++) {
 					if (isset($_POST["NO$i"])) {
 						$NO = $_POST["NO$i"];
-						// print_r($NO);
-						// echo "<br/>";
+						print_r($NO);
+						echo "<br/>";
 						$category_list = array();
 						$field_value_list = array();
 						$insert_category_list = array();
@@ -244,10 +282,10 @@ class Upload extends Controller
 										}
 										if ($check_group_id) {
 											$id_group = $this->model->check_group($key, $category_list[$key], $tomato["id_$key"]);
-											//echo "id group =>".$id_group;
+											//echo "id group   d_group;
 										} else {
 											$id_group = $tomato["id_$key"];
-											//echo "else id group =>".$id_group;
+											//echo "else id group   d_group;
 										}
 										$id_list_group["id_$key"] = $id_group;
 									}
@@ -610,14 +648,14 @@ class Upload extends Controller
 						continue;
 					}
 				}
-				$this->view->num_row = $num_row;
-				$this->view->detail = $detail;
-				$this->view->render('upload/result_upload');
+				// $this->view->num_row = $num_row;
+				// $this->view->detail = $detail;
+				// $this->view->render('upload/result_upload');
 			}
 		} else {
 			//echo "no row update";
-			$this->view->no_row = 1;
-			$this->view->render('upload/result_upload');
+			// $this->view->no_row = 1;
+			// $this->view->render('upload/result_upload');
 		}
 	}
 	public function check_accession_physical()
